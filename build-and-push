@@ -1,0 +1,8 @@
+#! /bin/bash
+
+REPO="$1"
+
+docker build -t lightboard/teamcity-agent:latest ./
+docker tag lightboard/teamcity-agent:latest "$REPO:latest"
+docker push "$REPO:latest"
+
