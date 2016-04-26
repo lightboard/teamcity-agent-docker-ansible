@@ -86,8 +86,16 @@ RUN ruby-switch --set ruby2.1
 RUN npm install -g bower grunt-cli
 RUN gem install rake bundler compass --no-ri --no-rdoc
 
+
 # Install the magic wrapper.
 ADD wrapdocker /usr/local/bin/wrapdocker
+
+# Ansible for CD
+RUN  apt-get install -y software-properties-common \
+  && apt-add-repository ppa:ansible/ansible \
+  && apt-get update \
+  && apt-get install -y ansible \
+	&& rm -rf /var/lib/apt/lists/*
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
