@@ -82,19 +82,17 @@ RUN apt-add-repository ppa:brightbox/ruby-ng \
 
 # Install httpie (with SNI), awscli, docker-compose
 RUN pip install --upgrade pyopenssl pyasn1 ndg-httpsclient httpie awscli docker-compose==1.6.0
-RUN ruby-switch --set ruby2.1
 RUN npm install -g bower grunt-cli
-RUN gem install rake bundler compass --no-ri --no-rdoc
 
 
 # Install the magic wrapper.
 ADD wrapdocker /usr/local/bin/wrapdocker
 
-# Ansible for CD
+# Ansible for CD, postgresql client for setup/teardown
 RUN  apt-get install -y software-properties-common \
   && apt-add-repository ppa:ansible/ansible \
   && apt-get update \
-  && apt-get install -y ansible \
+  && apt-get install -y ansible  postgresql-client-9.3 \
 	&& rm -rf /var/lib/apt/lists/*
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
