@@ -1,6 +1,6 @@
 #! /bin/bash
 
-REPO="$1"
+REPO=${1-$DOCKER_REPOSITORY}
 
 docker build -t lightboard/teamcity-agent:latest ./
 docker tag lightboard/teamcity-agent:latest "$REPO:latest"
