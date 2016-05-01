@@ -23,4 +23,7 @@ fi
 echo "Starting buildagent..."
 chown -R teamcity:teamcity /opt/buildAgent
 
+# is this dumb?
+chown -R teamcity:teamcity /usr/local/lib/node_modules
+
 wrapdocker gosu teamcity /opt/buildAgent/bin/agent.sh run
