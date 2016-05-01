@@ -61,7 +61,7 @@ RUN set -ex \
   done
 
 ENV NODE_VERSION 4.2.6
-ENV NPM_VERSION 3.5.0
+ENV NPM_VERSION 2.14.15
 
 RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
   && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
@@ -72,28 +72,19 @@ RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-
   && npm install -g "npm@$NPM_VERSION" \
   && npm cache clear
 
-# Install ruby build repositories
-RUN apt-add-repository ppa:brightbox/ruby-ng \
+RUN  apt-add-repository ppa:ansible/ansible \
   && apt-get update \
   && apt-get upgrade -y \
-  && apt-get install -y ruby2.1 ruby2.1-dev ruby ruby-switch unzip \
-     iptables lxc fontconfig libffi-dev build-essential git python-dev libssl-dev python-pip \
+  && apt-get install -y unzip iptables lxc fontconfig libffi-dev build-essential git libssl-dev python-pip ansible  postgresql-client-9.3 \
   && rm -rf /var/lib/apt/lists/*
 
-# Install httpie (with SNI), awscli, docker-compose
-RUN pip install --upgrade pyopenssl pyasn1 ndg-httpsclient httpie awscli docker-compose==1.6.0
+RUN pip install --upgrade awscli
+#RUN pip install --upgrade pyopenssl pyasn1 ndg-httpsclient httpie awscli docker-compose==1.6.0
 RUN npm install -g bower grunt-cli
 
 
 # Install the magic wrapper.
 ADD wrapdocker /usr/local/bin/wrapdocker
-
-# Ansible for CD, postgresql client for setup/teardown
-RUN  apt-get install -y software-properties-common \
-  && apt-add-repository ppa:ansible/ansible \
-  && apt-get update \
-  && apt-get install -y ansible  postgresql-client-9.3 \
-	&& rm -rf /var/lib/apt/lists/*
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
@@ -101,6 +92,5 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 VOLUME /var/lib/docker
 VOLUME /opt/buildAgent
-
 
 EXPOSE 9090
