@@ -1,11 +1,25 @@
 FROM ubuntu:14.04
 
 ENV AGENT_DIR  /opt/buildAgent
+ENV NODE_VERSION 8.5.0
+
+
+RUN  apt-get update \
+  && apt-get upgrade -y \
+	&& apt-get install -y --no-install-recommends \
+		apt-transport-https lxc iptables aufs-tools ca-certificates curl wget software-properties-common language-pack-en \
+  && add-apt-repository ppa:ansible/ansible \
+  && apt-get install -y  unzip iptables lxc fontconfig libffi-dev  git libssl-dev python-pip ansible  postgresql-client-9.3 \
+	&& rm -rf /var/lib/apt/lists/*
+
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash -
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
 
 RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-		lxc iptables aufs-tools ca-certificates curl wget software-properties-common language-pack-en \
+  && apt-get install -y nodejs yarn \
 	&& rm -rf /var/lib/apt/lists/*
+# RUN apt-get update && apt-get install yarn
 
 # Fix locale.
 ENV LANG en_US.UTF-8
@@ -25,12 +39,13 @@ RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-s
 	&& echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
 	&& add-apt-repository -y ppa:webupd8team/java \
 	&& apt-get update \
-  	&& apt-get install -y --no-install-recommends \
-      oracle-java8-installer ca-certificates-java \
-  	&& rm -rf /var/lib/apt/lists/* /var/cache/oracle-jdk8-installer/*.tar.gz /usr/lib/jvm/java-8-oracle/src.zip /usr/lib/jvm/java-8-oracle/javafx-src.zip \
+  && apt-get install -y --no-install-recommends \
+     oracle-java8-installer ca-certificates-java \
+     libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ \
+  && rm -rf /var/lib/apt/lists/* /var/cache/oracle-jdk8-installer/*.tar.gz /usr/lib/jvm/java-8-oracle/src.zip /usr/lib/jvm/java-8-oracle/javafx-src.zip \
       /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts \
-  	&& ln -s /etc/ssl/certs/java/cacerts /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts \
-  	&& update-ca-certificates
+  && ln -s /etc/ssl/certs/java/cacerts /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts \
+  && update-ca-certificates
 
 # Install docker
 RUN wget -O /usr/local/bin/docker https://get.docker.com/builds/Linux/x86_64/docker-1.10.1 && chmod +x /usr/local/bin/docker
@@ -45,48 +60,16 @@ RUN curl -o /usr/local/bin/jq -SL https://github.com/stedolan/jq/releases/downlo
 
 # Install nodejs (from official node dockerfile)
 
-# gpg keys listed at https://github.com/nodejs/node
-RUN set -ex \
-  && for key in \
-    9554F04D7259F04124DE6B476D5A82AC7E37093B \
-    94AE36675C464D64BAFA68DD7434390BDBE9B9C5 \
-    0034A06D9D9B0064CE8ADF6BF1747F4AD2306D93 \
-    FD3A5288F042B6850C66B31F09FE44734EB7990E \
-    71DCFD284A79C3B38668286BC97EC7A07EDE3FC1 \
-    DD8F2338BAE7501E3DD5AC78C273792F7D83545D \
-    B9AE9905FFD7803F25714661B63B535A4C206CA9 \
-    C4F0DFFF4E8C1A8236409D08E73BC641CC11F4C8 \
-  ; do \
-    gpg --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-  done
-
-ENV NODE_VERSION 4.2.6
-ENV NPM_VERSION 2.14.15
-
-RUN curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.gz" \
-  && curl -SLO "https://nodejs.org/dist/v$NODE_VERSION/SHASUMS256.txt.asc" \
-  && gpg --verify SHASUMS256.txt.asc \
-  && grep " node-v$NODE_VERSION-linux-x64.tar.gz\$" SHASUMS256.txt.asc | sha256sum -c - \
-  && tar -xzf "node-v$NODE_VERSION-linux-x64.tar.gz" -C /usr/local --strip-components=1 \
-  && rm "node-v$NODE_VERSION-linux-x64.tar.gz" SHASUMS256.txt.asc \
-  && npm install -g "npm@$NPM_VERSION" \
-  && npm cache clear
-
-RUN  apt-add-repository ppa:ansible/ansible \
-  && apt-get update \
-  && apt-get upgrade -y \
-  && apt-get install -y unzip iptables lxc fontconfig libffi-dev build-essential git libssl-dev python-pip ansible  postgresql-client-9.3 \
-  && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --upgrade awscli
 #RUN pip install --upgrade pyopenssl pyasn1 ndg-httpsclient httpie awscli docker-compose==1.6.0
-RUN npm install -g bower grunt-cli
-
 
 # Install the magic wrapper.
 ADD wrapdocker /usr/local/bin/wrapdocker
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
+
+RUN chown -R teamcity /home/teamcity
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
