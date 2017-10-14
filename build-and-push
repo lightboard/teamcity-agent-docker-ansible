@@ -1,4 +1,5 @@
 #! /bin/bash
+set -e
 
 REPO=${1-$DOCKER_REPOSITORY}
 
