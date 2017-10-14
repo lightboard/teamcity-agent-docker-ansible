@@ -41,6 +41,7 @@ RUN echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-s
 	&& apt-get update \
   && apt-get install -y --no-install-recommends \
      oracle-java8-installer ca-certificates-java \
+     imagemagick ghostscript \
      libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ \
   && rm -rf /var/lib/apt/lists/* /var/cache/oracle-jdk8-installer/*.tar.gz /usr/lib/jvm/java-8-oracle/src.zip /usr/lib/jvm/java-8-oracle/javafx-src.zip \
       /usr/lib/jvm/java-8-oracle/jre/lib/security/cacerts \
@@ -76,4 +77,8 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 VOLUME /var/lib/docker
 VOLUME /opt/buildAgent
 
+
+RUN apt-get update \
+  && apt-get install -y librsvg2-bin \
+	&& rm -rf /var/lib/apt/lists/*
 EXPOSE 9090
