@@ -61,7 +61,7 @@ ADD wrapdocker /usr/local/bin/wrapdocker
 
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
-RUN chown -R teamcity /home/teamcity
+#RUN chown -R teamcity /home/teamcity
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
