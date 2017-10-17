@@ -19,7 +19,7 @@ RUN apt-get upgrade -y \
   \
   && apt-get update -y \
   && apt-get install -y --no-install-recommends \
-     unzip fontconfig libffi-dev git libssl-dev python-pip ansible postgresql-client-9.3 \
+     unzip fontconfig libffi-dev git ssh-client libssl-dev python-pip ansible postgresql-client-9.3 \
      oracle-java8-installer ca-certificates-java \
      imagemagick ghostscript \
      libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ librsvg2-bin \
