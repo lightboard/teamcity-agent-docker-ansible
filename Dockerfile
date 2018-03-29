@@ -13,6 +13,7 @@ RUN apt-get upgrade -y \
   && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - \
   && echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list \
   && add-apt-repository ppa:ansible/ansible \
+  && add-apt-repository ppa:mc3man/trusty-media \
   && echo debconf shared/accepted-oracle-license-v1-1 select true | debconf-set-selections \
 	&& echo debconf shared/accepted-oracle-license-v1-1 seen true | debconf-set-selections \
 	&& add-apt-repository -y ppa:webupd8team/java \
@@ -26,6 +27,7 @@ RUN apt-get upgrade -y \
      oracle-java8-installer ca-certificates-java \
      imagemagick ghostscript \
      libcairo2-dev libjpeg-dev libpango1.0-dev libgif-dev build-essential g++ librsvg2-bin \
+     ffmpeg \
      nodejs yarn \
   && rm -rf /var/lib/apt/lists/* \
      /var/cache/oracle-jdk8-installer/*.tar.gz \
